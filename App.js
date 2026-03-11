@@ -1,44 +1,41 @@
-import React from "react"
-import { detailsStyles, styles } from './details'; // Importando os estilos
+import React from 'react';
+import { detailsStyles, styles } from './details';
 
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 
-
-
-
-
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { Ionicons } from "@expo/vector-icons";
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  // ARRAY GLOBAL DE AGENDAMENTOS
+  const [salvaData, setSalvaData] = React.useState([]);
+
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: "#0F172A" },
-          headerTintColor: "#fff",
-          headerTitleStyle: { fontWeight: "bold" },
-        }}
-      >
+          headerStyle: { backgroundColor: '#0F172A' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold' },
+        }}>
         <Stack.Screen
           name="Home"
           component={HomeScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="Details"
-          component={DetailsScreen}
-          options={{ title: "Agendamento" }}
-        />
+
+        <Stack.Screen name="Details">
+          {(props) => (
+            <DetailsScreen
+              {...props}
+              salvaData={salvaData}
+              setSalvaData={setSalvaData}
+            />
+          )}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -49,14 +46,13 @@ export default function App() {
 function HomeScreen({ navigation }) {
   return (
     <ScrollView
-      style={{ backgroundColor: "#0F172A" }}
+      style={{ backgroundColor: '#0F172A' }}
       contentContainerStyle={{
         paddingHorizontal: 16,
         paddingTop: 60,
         paddingBottom: 40,
       }}
-      showsVerticalScrollIndicator={false}
-    >
+      showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <View style={styles.logoCircle}>
           <Ionicons name="cut-outline" size={28} color="#fff" />
@@ -67,8 +63,8 @@ function HomeScreen({ navigation }) {
         </Text>
 
         <Text style={styles.subtitle}>
-          Experiência de barbearia de alta qualidade.
-          Escolha seu serviço e agende um horário.
+          Experiência de barbearia de alta qualidade. Escolha seu serviço e
+          agende um horário.
         </Text>
       </View>
 
@@ -123,13 +119,12 @@ function ServiceCard({ navigation, service, description, price, duration }) {
           <TouchableOpacity
             style={styles.arrowButton}
             onPress={() =>
-              navigation.navigate("Details", {
+              navigation.navigate('Details', {
                 service,
                 price,
                 duration,
               })
-            }
-          >
+            }>
             <Ionicons name="arrow-forward" size={18} color="#000" />
           </TouchableOpacity>
         </View>
@@ -140,18 +135,30 @@ function ServiceCard({ navigation, service, description, price, duration }) {
 
 /* ================= DETAILS ================= */
 
-function DetailsScreen({ route }) {
+function DetailsScreen({ route, salvaData, setSalvaData }) {
   const { service, price, duration } = route.params;
+
+  const [selectedTime, setSelectedTime] = React.useState(null);
+
+  const schedule = {
+    'Segunda-feira': ['14:00', '14:30', '15:00', '15:30'],
+    'Terça-feira': ['14:00', '14:30', '15:00', '15:30'],
+    'Quarta-feira': ['14:00', '14:30', '15:00', '15:30'],
+    'Quinta-feira': ['14:00', '14:30', '15:00', '15:30'],
+    'Sexta-feira': ['14:00', '14:30', '15:00', '15:30'],
+    'Sábado': ['14:00', '14:30', '15:00', '15:30'],
+    'Domingo': ['14:00', '14:30', '15:00'],
+  };
+   
 
   return (
     <ScrollView
-      style={{ backgroundColor: "#0F172A" }}
+      style={{ backgroundColor: '#0F172A' }}
       contentContainerStyle={{
         padding: 20,
         paddingBottom: 40,
       }}
-      showsVerticalScrollIndicator={false}
-    >
+      showsVerticalScrollIndicator={false}>
       <Text style={detailsStyles.title}>Agendamento</Text>
 
       <View style={detailsStyles.card}>
@@ -160,12 +167,66 @@ function DetailsScreen({ route }) {
         <Text style={detailsStyles.info}>💰 Valor: {price}</Text>
       </View>
 
-      <TouchableOpacity style={detailsStyles.button}>
+      {/* LISTA DE HORÁRIOS */}
+
+      {Object.keys(schedule).map((day) => (
+        <View key={day} style={{ marginBottom: 20 }}>
+          <Text
+            style={{
+              color: '#C9A227',
+              fontSize: 18,
+              fontWeight: 'bold',
+              marginBottom: 10,
+            }}>
+            {day}
+          </Text>
+
+          {schedule[day].map((time) => {
+            const fullTime = `${day} ${time}`;
+
+            return (
+              <TouchableOpacity
+                key={fullTime}
+                onPress={() => setSelectedTime(fullTime)}
+                style={{
+                  backgroundColor:
+                    selectedTime === fullTime ? '#C9A227' : '#1E293B',
+                  padding: 12,
+                  borderRadius: 10,
+                  marginBottom: 8,
+                }}>
+                <Text
+                  style={{
+                    color: selectedTime === fullTime ? '#000' : '#fff',
+                    fontSize: 16,
+                  }}>
+                  {time}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      ))}
+
+      {/* BOTÃO CONFIRMAR */}
+
+      <TouchableOpacity
+        style={detailsStyles.button}
+        onPress={() => {
+          if (selectedTime) {
+            const novaLista = [...salvaData, selectedTime];
+            setSalvaData(novaLista);
+
+            console.log('Agendamentos:', novaLista);
+
+            alert('Agendamento confirmado!');
+            setSelectedTime(null);
+          }
+        }}>
         <Text style={detailsStyles.buttonText}>
-          Confirmar Agendamento
+          {selectedTime ? `Confirmar ${selectedTime}` : 'Selecione um horário'}
         </Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
-
