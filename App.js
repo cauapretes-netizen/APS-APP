@@ -58,9 +58,21 @@ export default function App() {
 ////////////////////////////////////////////////////////
 /* ================= LOGIN ================= */
 ////////////////////////////////////////////////////////
-
 function LoginScreen({ navigation }) {
-   const [nome, setNome] = React.useState('');
+  const [nome, setNome] = React.useState('');
+  const [senha, setSenha] = React.useState('');
+
+  const handleLogin = () => {
+    // validação
+    if (!nome || !senha) {
+      alert('Preencha todos os campos!');
+      return;
+    }
+
+    // se estiver tudo preenchido
+    navigation.navigate('Home');
+  };
+
   return (
     <View
       style={{
@@ -75,45 +87,14 @@ function LoginScreen({ navigation }) {
         Bem-vindo 👋
       </Text>
 
-      <TouchableOpacity
-        style={{
-          backgroundColor: '#C9A227',
-          padding: 15,
-          borderRadius: 15,
-          width: '100%',
-          marginBottom: 20,
-          alignItems: 'center',
-        }}
-        onPress={() => navigation.navigate('Home')}
-      >
-        <Text style={{ color: '#000', fontWeight: 'bold' }}>
-          Entrar como Cliente
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
+      {/* INPUT NOME */}
+      <TextInput
         style={{
           backgroundColor: '#1E293B',
           padding: 15,
-          borderRadius: 15,
           width: '100%',
-          alignItems: 'center',
-        }}
-        onPress={() => navigation.navigate('Home')}
-      >
-        <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-          Entrar como Barbeiro
-        </Text>
-      </TouchableOpacity>
-
-     <TextInput
-        style={{
-          backgroundColor: '#1E293B',
-          padding: 15,
-          width:'100%' ,
           borderRadius: 10,
           color: '#fff',
-          marginTop: 20,
           marginBottom: 20,
         }}
         placeholder="Digite seu nome"
@@ -121,23 +102,55 @@ function LoginScreen({ navigation }) {
         value={nome}
         onChangeText={setNome}
       />
-     <TextInput
+
+      {/* INPUT SENHA */}
+      <TextInput
         style={{
           backgroundColor: '#1E293B',
           padding: 15,
-          width:'100%' ,
+          width: '100%',
           borderRadius: 10,
           color: '#fff',
           marginBottom: 20,
         }}
         placeholder="Digite sua senha"
         placeholderTextColor="#94A3B8"
-        value={nome}
-        onChangeText={setNome}
+        secureTextEntry={true}
+        value={senha}
+        onChangeText={setSenha}
       />
 
+      {/* ESCOLHA DE TIPO */}
+      <TouchableOpacity
+        style={{
+          backgroundColor: '#C9A227',
+          padding: 15,
+          borderRadius: 15,
+          width: '100%',
+          alignItems: 'center',
+          marginBottom: 10,
+        }}
+        onPress={handleLogin}
+      >
+        <Text style={{ color: '#fff' }}>
+          Entrar como Cliente
+        </Text>
+      </TouchableOpacity>
 
-
+      <TouchableOpacity
+        style={{
+          backgroundColor: '#C9A227',
+          padding: 15,
+          borderRadius: 15,
+          width: '100%',
+          alignItems: 'center',
+        }}
+        onPress={handleLogin}
+      >
+        <Text style={{ color: '#fff' }}>
+          Entrar como Barbeiro
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
