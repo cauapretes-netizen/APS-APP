@@ -1,20 +1,19 @@
-import React from 'react';
-import { detailsStyles, styles } from './details';
-import { TextInput } from 'react-native';
+import React from "react";
+import { detailsStyles, styles } from "./details";
 
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-} from 'react-native';
+  TextInput,
+} from "react-native";
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { Ionicons } from '@expo/vector-icons';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { Ionicons } from "@expo/vector-icons";
 
 const Stack = createStackNavigator();
-
 
 export default function App() {
   const [salvaData, setSalvaData] = React.useState([]);
@@ -22,25 +21,28 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
+        initialRouteName="Login"
         screenOptions={{
-          headerStyle: { backgroundColor: '#0F172A' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' },
+          headerStyle: { backgroundColor: "#0F172A" },
+          headerTintColor: "#fff",
+          headerTitleStyle: { fontWeight: "bold" },
         }}
       >
-        {/* NOVA TELA LOGIN */}
+        {/* LOGIN */}
         <Stack.Screen
           name="Login"
           component={LoginScreen}
           options={{ headerShown: false }}
         />
 
+        {/* HOME */}
         <Stack.Screen
           name="Home"
           component={HomeScreen}
           options={{ headerShown: false }}
         />
 
+        {/* DETAILS */}
         <Stack.Screen name="Details">
           {(props) => (
             <DetailsScreen
@@ -58,43 +60,41 @@ export default function App() {
 ////////////////////////////////////////////////////////
 /* ================= LOGIN ================= */
 ////////////////////////////////////////////////////////
-function LoginScreen({ navigation }) {
-  const [nome, setNome] = React.useState('');
-  const [senha, setSenha] = React.useState('');
 
-  const handleLogin = () => {
-    // validação
+function LoginScreen({ navigation }) {
+  const [nome, setNome] = React.useState("");
+  const [senha, setSenha] = React.useState("");
+
+  const handleLogin = (tipo) => {
     if (!nome || !senha) {
-      alert('Preencha todos os campos!');
+      alert("Preencha todos os campos!");
       return;
     }
 
-    // se estiver tudo preenchido
-    navigation.navigate('Home');
+    navigation.navigate("Home", { tipo });
   };
 
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0F172A',
-        justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: "#0F172A",
+        justifyContent: "center",
+        alignItems: "center",
         padding: 20,
       }}
     >
-      <Text style={{ color: '#fff', fontSize: 28, marginBottom: 40 }}>
+      <Text style={{ color: "#fff", fontSize: 28, marginBottom: 40 }}>
         Bem-vindo 👋
       </Text>
 
-      {/* INPUT NOME */}
       <TextInput
         style={{
-          backgroundColor: '#1E293B',
+          backgroundColor: "#1E293B",
           padding: 15,
-          width: '100%',
+          width: "100%",
           borderRadius: 10,
-          color: '#fff',
+          color: "#fff",
           marginBottom: 20,
         }}
         placeholder="Digite seu nome"
@@ -103,14 +103,13 @@ function LoginScreen({ navigation }) {
         onChangeText={setNome}
       />
 
-      {/* INPUT SENHA */}
       <TextInput
         style={{
-          backgroundColor: '#1E293B',
+          backgroundColor: "#1E293B",
           padding: 15,
-          width: '100%',
+          width: "100%",
           borderRadius: 10,
-          color: '#fff',
+          color: "#fff",
           marginBottom: 20,
         }}
         placeholder="Digite sua senha"
@@ -120,34 +119,35 @@ function LoginScreen({ navigation }) {
         onChangeText={setSenha}
       />
 
-      {/* ESCOLHA DE TIPO */}
+      {/* CLIENTE */}
       <TouchableOpacity
         style={{
-          backgroundColor: '#C9A227',
+          backgroundColor: "#C9A227",
           padding: 15,
           borderRadius: 15,
-          width: '100%',
-          alignItems: 'center',
+          width: "100%",
+          alignItems: "center",
           marginBottom: 10,
         }}
-        onPress={handleLogin}
+        onPress={() => handleLogin("cliente")}
       >
-        <Text style={{ color: '#fff' }}>
+        <Text style={{ color: "#000", fontWeight: "bold" }}>
           Entrar como Cliente
         </Text>
       </TouchableOpacity>
 
+      {/* BARBEIRO */}
       <TouchableOpacity
         style={{
-          backgroundColor: '#C9A227',
+          backgroundColor: "#1E293B",
           padding: 15,
           borderRadius: 15,
-          width: '100%',
-          alignItems: 'center',
+          width: "100%",
+          alignItems: "center",
         }}
-        onPress={handleLogin}
+        onPress={() => handleLogin("barbeiro")}
       >
-        <Text style={{ color: '#fff' }}>
+        <Text style={{ color: "#fff" }}>
           Entrar como Barbeiro
         </Text>
       </TouchableOpacity>
@@ -159,10 +159,12 @@ function LoginScreen({ navigation }) {
 /* ================= HOME ================= */
 ////////////////////////////////////////////////////////
 
-function HomeScreen({ navigation }) {
+function HomeScreen({ navigation, route }) {
+  const tipo = route?.params?.tipo;
+
   return (
     <ScrollView
-      style={{ backgroundColor: '#0F172A' }}
+      style={{ backgroundColor: "#0F172A" }}
       contentContainerStyle={{
         paddingHorizontal: 16,
         paddingTop: 60,
@@ -179,7 +181,13 @@ function HomeScreen({ navigation }) {
           Barbearia <Text style={styles.highlight}>Premium</Text>
         </Text>
 
+        {/* MOSTRA TIPO */}
+        <Text style={{ color: "#C9A227", marginTop: 5 }}>
+          {tipo === "barbeiro" ? "Modo Barbeiro" : "Modo Cliente"}
+        </Text>
+
         <Text style={styles.subtitle}>
+          Experiência de barbearia de alta qualidade.
           Escolha seu serviço e agende um horário.
         </Text>
       </View>
@@ -187,7 +195,7 @@ function HomeScreen({ navigation }) {
       <ServiceCard
         navigation={navigation}
         service="Barba Completa"
-        description="Design de barba"
+        description="Design de barba, aparação e hidratação"
         price="R$ 35,00"
         duration="25 minutos"
       />
@@ -195,7 +203,7 @@ function HomeScreen({ navigation }) {
       <ServiceCard
         navigation={navigation}
         service="Corte Infantil"
-        description="Corte para crianças"
+        description="Corte especial para crianças"
         price="R$ 35,00"
         duration="25 minutos"
       />
@@ -203,7 +211,7 @@ function HomeScreen({ navigation }) {
       <ServiceCard
         navigation={navigation}
         service="Corte Clássico"
-        description="Corte tradicional"
+        description="Corte tradicional com máquina e tesoura"
         price="R$ 45,00"
         duration="30 minutos"
       />
@@ -237,7 +245,7 @@ function ServiceCard({ navigation, service, description, price, duration }) {
           <TouchableOpacity
             style={styles.arrowButton}
             onPress={() =>
-              navigation.navigate('Details', {
+              navigation.navigate("Details", {
                 service,
                 price,
                 duration,
@@ -258,35 +266,60 @@ function ServiceCard({ navigation, service, description, price, duration }) {
 
 function DetailsScreen({ route, salvaData, setSalvaData }) {
   const { service, price, duration } = route.params;
-
   const [selectedTime, setSelectedTime] = React.useState(null);
 
   const schedule = {
-    Segunda: ['14:00', '14:30', '15:00'],
-    Terça: ['14:00', '14:30', '15:00'],
-    Quarta: ['14:00', '14:30', '15:00'],
+    "Segunda-feira": ["14:00", "14:30", "15:00", "15:30"],
+    "Terça-feira": ["14:00", "14:30", "15:00", "15:30"],
+    "Quarta-feira": ["14:00", "14:30", "15:00", "15:30"],
+    "Quinta-feira": ["14:00", "14:30", "15:00", "15:30"],
+    "Sexta-feira": ["14:00", "14:30", "15:00", "15:30"],
+    "Sábado": ["14:00", "14:30", "15:00", "15:30"],
+    "Domingo": ["14:00", "14:30", "15:00"],
   };
 
   return (
     <ScrollView
-      style={{ backgroundColor: '#0F172A' }}
-      contentContainerStyle={{ padding: 20 }}
+      style={{ backgroundColor: "#0F172A" }}
+      contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
     >
       <Text style={detailsStyles.title}>Agendamento</Text>
 
+      <View style={detailsStyles.card}>
+        <Text style={detailsStyles.service}>{service}</Text>
+        <Text style={detailsStyles.info}>⏱ {duration}</Text>
+        <Text style={detailsStyles.info}>💰 {price}</Text>
+      </View>
+
       {Object.keys(schedule).map((day) => (
-        <View key={day}>
-          <Text style={{ color: '#C9A227', marginTop: 10 }}>{day}</Text>
+        <View key={day} style={{ marginBottom: 20 }}>
+          <Text style={{ color: "#C9A227", fontSize: 18 }}>
+            {day}
+          </Text>
 
           {schedule[day].map((time) => {
-            const full = `${day} ${time}`;
+            const fullTime = `${day} ${time}`;
 
             return (
               <TouchableOpacity
-                key={full}
-                onPress={() => setSelectedTime(full)}
+                key={fullTime}
+                onPress={() => setSelectedTime(fullTime)}
+                style={{
+                  backgroundColor:
+                    selectedTime === fullTime ? "#C9A227" : "#1E293B",
+                  padding: 12,
+                  borderRadius: 10,
+                  marginBottom: 8,
+                }}
               >
-                <Text style={{ color: '#fff' }}>{time}</Text>
+                <Text
+                  style={{
+                    color: selectedTime === fullTime ? "#000" : "#fff",
+                  }}
+                >
+                  {time}
+                </Text>
               </TouchableOpacity>
             );
           })}
@@ -297,13 +330,20 @@ function DetailsScreen({ route, salvaData, setSalvaData }) {
         style={detailsStyles.button}
         onPress={() => {
           if (selectedTime) {
-            setSalvaData([...salvaData, selectedTime]);
-            console.log('SALVOS:', [...salvaData, selectedTime]);
+            const novaLista = [...salvaData, selectedTime];
+            setSalvaData(novaLista);
+
+            console.log("Agendamentos:", novaLista);
+
+            alert("Agendamento confirmado!");
+            setSelectedTime(null);
           }
         }}
       >
         <Text style={detailsStyles.buttonText}>
-          Confirmar
+          {selectedTime
+            ? `Confirmar ${selectedTime}`
+            : "Selecione um horário"}
         </Text>
       </TouchableOpacity>
     </ScrollView>
