@@ -41,3 +41,14 @@
 
 - O usuário conseguirá ver todas as informações como: Tipo de corte, Nome do Cliente, Data/Horário etc
 - Ele também conseguirá cancelar o agendamento e informar um motivo (opcional)
+
+# TO DO LIST:
+
+- Tela de cadastro
+- Agendamento funcional (integração com o "database")
+- Tela de usuário (Barbeiro)
+  	- Lógica para o barbeiro não acessar a tela de cliente
+- Logica de input de senha
+- Banco de dados no geral (Isaac)
+- Vídeo (todos tem que participar)
+- Botão no final da tela de agendamentos do usuário
