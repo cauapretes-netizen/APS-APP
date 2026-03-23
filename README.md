@@ -22,6 +22,7 @@
 		- Tipo: (Cliente ou Barbeiro)
 		- Agendamentos: (se for cliente vai aparecer os cortes que foram agendados, se for barbeiro, vai aparecer todos os agendamentos de todos os usuários)
 
+- Login terá que ter validação de caracteres (Login: nome com no minimo 4 digitos, Senha entre 8 a 12 digitos)
 - Caso o usuário tente fazer login que não existe, vai avisar que o login está errado ou ele precisa fazer cadastro ainda
 - Os dados inseridos no login vão ser comparados com o obj do **database.json**
 
