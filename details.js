@@ -1,133 +1,265 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
+
+export const colors = {
+  bg: "#0F172A",
+  card: "#1E293B",
+  cardActive: "#1E3A5F",
+  gold: "#C9A227",
+  textPrimary: "#fff",
+  textSecondary: "#94A3B8",
+  placeholder: "#475569",
+  dark: "#334155",
+};
 
 export const styles = StyleSheet.create({
-  header: {
-    marginBottom: 30,
-  },
 
-  logoCircle: {
-    width: 60,
-    height: 60,
-    backgroundColor: "#C9A227",
-    borderRadius: 30,
+  // ===== GERAL =====
+  screenCenter: {
+    flex: 1,
+    backgroundColor: colors.bg,
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
+  },
+
+  // ===== ÍCONE TESOURA =====
+  iconCircle: {
+    backgroundColor: colors.card,
+    padding: 20,
+    borderRadius: 50,
+    marginBottom: 16,
+  },
+
+  // ===== LOGIN / CADASTRO =====
+  welcomeText: {
+    color: colors.textPrimary,
+    fontSize: 28,
+    marginBottom: 30,
+  },
+  input: {
+    backgroundColor: colors.card,
+    padding: 15,
+    width: "100%",
+    borderRadius: 10,
+    color: colors.textPrimary,
     marginBottom: 20,
   },
-
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#fff",
+  inputSmall: {
+    backgroundColor: colors.card,
+    padding: 15,
+    width: "100%",
+    borderRadius: 10,
+    color: colors.textPrimary,
+    marginBottom: 15,
   },
-
-  highlight: {
-    color: "#C9A227",
-  },
-   subtitle: {
-    color: "#94A3B8",
-    marginTop: 10,
-    lineHeight: 20,
-  },
-
-  card: {
-    backgroundColor: "#1E293B",
-    borderRadius: 20,
-    marginBottom: 20,
-    overflow: "hidden",
-  },
-
-  imagePlaceholder: {
-    height: 180,
-    backgroundColor: "#334155",
-  },
-
-  cardContent: {
-    padding: 16,
-  },
-    cardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-
-  cardDescription: {
-    color: "#94A3B8",
-    marginTop: 4,
-    marginBottom: 10,
-  },
-
-  infoRow: {
-    flexDirection: "row",
+  primaryButton: {
+    backgroundColor: colors.gold,
+    padding: 15,
+    borderRadius: 15,
+    width: "100%",
     alignItems: "center",
     marginBottom: 10,
   },
-
-  duration: {
-    color: "#C9A227",
+  primaryButtonText: {
+    color: "#000",
+    fontWeight: "bold",
+  },
+  linkRow: {
+    marginTop: 8,
+  },
+  linkText: {
+    color: colors.textSecondary,
+    fontSize: 13,
+  },
+  linkHighlight: {
+    color: colors.gold,
+    fontWeight: "bold",
   },
 
-  priceLabel: {
-    color: "#94A3B8",
+  // ===== CHECKBOX TIPO =====
+  checkboxLabel: {
+    color: colors.textSecondary,
+    marginBottom: 12,
+    fontSize: 14,
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  checkboxCard: (active) => ({
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: active ? colors.cardActive : colors.card,
+    borderWidth: 2,
+    borderColor: active ? colors.gold : "transparent",
+    borderRadius: 12,
+    padding: 14,
+    gap: 10,
+  }),
+  checkboxBox: (active) => ({
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: colors.gold,
+    backgroundColor: active ? colors.gold : "transparent",
+    alignItems: "center",
+    justifyContent: "center",
+  }),
+  checkboxCheck: {
+    color: "#000",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  checkboxTitle: {
+    color: colors.textPrimary,
+    fontWeight: "bold",
+  },
+  checkboxSub: {
+    color: colors.textSecondary,
+    fontSize: 11,
+  },
+
+  // ===== HOME =====
+  homeHeader: {
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  homeIconCircle: {
+    backgroundColor: colors.card,
+    padding: 16,
+    borderRadius: 50,
+    marginBottom: 12,
+  },
+  homeTitle: {
+    color: colors.textPrimary,
+    fontSize: 26,
+    fontWeight: "bold",
+  },
+  homeHighlight: {
+    color: colors.gold,
+  },
+  homeTipo: {
+    color: colors.gold,
+    marginTop: 5,
+  },
+  homeSubtitle: {
+    color: colors.textSecondary,
+    textAlign: "center",
+    marginTop: 8,
+  },
+
+  // ===== CARD =====
+  card: {
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    marginBottom: 16,
+    overflow: "hidden",
+  },
+  cardImage: {
+    width: "100%",
+    height: 160,
+  },
+  cardImagePlaceholder: {
+    width: "100%",
+    height: 160,
+    backgroundColor: colors.dark,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardImagePlaceholderText: {
+    color: colors.placeholder,
+    fontSize: 12,
+    marginTop: 6,
+  },
+  cardBody: {
+    padding: 16,
+  },
+  cardTitle: {
+    color: colors.textPrimary,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  cardDescription: {
+    color: colors.textSecondary,
+    marginTop: 4,
+  },
+  cardDurationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  cardDurationText: {
+    color: colors.textSecondary,
+    marginLeft: 4,
+  },
+  cardPriceLabel: {
+    color: colors.textSecondary,
+    marginTop: 10,
     fontSize: 12,
   },
-  priceRow: {
+  cardPriceRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 4,
   },
-
-  price: {
-    fontSize: 22,
+  cardPrice: {
+    color: colors.gold,
+    fontSize: 20,
     fontWeight: "bold",
-    color: "#C9A227",
   },
-
-  arrowButton: {
-    backgroundColor: "#FDE68A",
+  cardArrowButton: {
+    backgroundColor: colors.gold,
     padding: 10,
-    borderRadius: 20,
+    borderRadius: 10,
   },
-});
 
-export const detailsStyles = StyleSheet.create({
-  title: {
-    fontSize: 26,
+  // ===== DETAILS =====
+  detailsTitle: {
+    color: colors.textPrimary,
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#fff",
-    marginBottom: 30,
-    textAlign: "center",
+    marginBottom: 20,
   },
-
-  card: {
-    backgroundColor: "#1E293B",
-    padding: 20,
-    borderRadius: 20,
-    marginBottom: 30,
+  detailsCard: {
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
   },
-
-  service: {
-    fontSize: 22,
+  detailsService: {
+    color: colors.textPrimary,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#C9A227",
-    marginBottom: 15,
   },
-   info: {
-    color: "#fff",
-    fontSize: 16,
+  detailsInfo: {
+    color: colors.textSecondary,
+    marginTop: 4,
+  },
+  detailsDayTitle: {
+    color: colors.gold,
+    fontSize: 18,
     marginBottom: 8,
   },
-
-  button: {
-    backgroundColor: "#C9A227",
-    padding: 15,
+  detailsTimeButton: (active) => ({
+    backgroundColor: active ? colors.gold : colors.card,
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 8,
+  }),
+  detailsTimeText: (active) => ({
+    color: active ? "#000" : colors.textPrimary,
+  }),
+  detailsConfirmButton: (active) => ({
+    backgroundColor: active ? colors.gold : colors.dark,
+    padding: 16,
     borderRadius: 15,
     alignItems: "center",
-  },
-
-  buttonText: {
-    color: "#000",
+  }),
+  detailsConfirmText: (active) => ({
+    color: active ? "#000" : colors.textSecondary,
     fontWeight: "bold",
-    fontSize: 16,
-  },
+  }),
 });
