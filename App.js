@@ -1,17 +1,16 @@
 import React from "react";
-import { detailsStyles, styles } from "./details";
-
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Image,
 } from "react-native";
-
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
+import { styles, colors } from "./details";
 
 const Stack = createStackNavigator();
 
@@ -23,33 +22,17 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="Login"
         screenOptions={{
-          headerStyle: { backgroundColor: "#0F172A" },
-          headerTintColor: "#fff",
+          headerStyle: { backgroundColor: colors.bg },
+          headerTintColor: colors.textPrimary,
           headerTitleStyle: { fontWeight: "bold" },
         }}
       >
-        {/* LOGIN */}
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-
-        {/* HOME */}
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ headerShown: false }}
-        />
-
-        {/* DETAILS */}
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Cadastro" component={CadastroScreen} options={{ title: "Criar Conta" }} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Details">
           {(props) => (
-            <DetailsScreen
-              {...props}
-              salvaData={salvaData}
-              setSalvaData={setSalvaData}
-            />
+            <DetailsScreen {...props} salvaData={salvaData} setSalvaData={setSalvaData} />
           )}
         </Stack.Screen>
       </Stack.Navigator>
@@ -66,89 +49,104 @@ function LoginScreen({ navigation }) {
   const [senha, setSenha] = React.useState("");
 
   const handleLogin = (tipo) => {
-    if (!nome || !senha) {
-      alert("Preencha todos os campos!");
-      return;
-    }
-
+    if (!nome || !senha) { alert("Preencha todos os campos!"); return; }
     navigation.navigate("Home", { tipo });
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#0F172A",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-      }}
-    >
-      <Text style={{ color: "#fff", fontSize: 28, marginBottom: 40 }}>
-        Bem-vindo 👋
-      </Text>
+    <View style={styles.screenCenter}>
+      <View style={styles.iconCircle}>
+        <Ionicons name="cut-outline" size={36} color={colors.gold} />
+      </View>
+
+      <Text style={styles.welcomeText}>Bem-vindo 👋</Text>
 
       <TextInput
-        style={{
-          backgroundColor: "#1E293B",
-          padding: 15,
-          width: "100%",
-          borderRadius: 10,
-          color: "#fff",
-          marginBottom: 20,
-        }}
+        style={styles.input}
         placeholder="Digite seu nome"
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={colors.textSecondary}
         value={nome}
         onChangeText={setNome}
       />
 
       <TextInput
-        style={{
-          backgroundColor: "#1E293B",
-          padding: 15,
-          width: "100%",
-          borderRadius: 10,
-          color: "#fff",
-          marginBottom: 20,
-        }}
+        style={styles.input}
         placeholder="Digite sua senha"
-        placeholderTextColor="#94A3B8"
-        secureTextEntry={true}
+        placeholderTextColor={colors.textSecondary}
+        secureTextEntry
         value={senha}
         onChangeText={setSenha}
       />
 
-      {/* CLIENTE */}
-      <TouchableOpacity
-        style={{
-          backgroundColor: "#C9A227",
-          padding: 15,
-          borderRadius: 15,
-          width: "100%",
-          alignItems: "center",
-          marginBottom: 10,
-        }}
-        onPress={() => handleLogin("cliente")}
-      >
-        <Text style={{ color: "#000", fontWeight: "bold" }}>
-          Entrar como Cliente
-        </Text>
+      <TouchableOpacity style={styles.primaryButton} onPress={() => handleLogin("cliente")}>
+        <Text style={styles.primaryButtonText}>Entrar</Text>
       </TouchableOpacity>
 
-      {/* BARBEIRO */}
-      <TouchableOpacity
-        style={{
-          backgroundColor: "#1E293B",
-          padding: 15,
-          borderRadius: 15,
-          width: "100%",
-          alignItems: "center",
-        }}
-        onPress={() => handleLogin("barbeiro")}
-      >
-        <Text style={{ color: "#fff" }}>
-          Entrar como Barbeiro
+      <TouchableOpacity style={styles.linkRow} onPress={() => navigation.navigate("Cadastro")}>
+        <Text style={styles.linkText}>
+          Não tem conta?{" "}
+          <Text style={styles.linkHighlight}>Cadastre-se</Text>
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+////////////////////////////////////////////////////////
+/* ================= CADASTRO ================= */
+////////////////////////////////////////////////////////
+
+function CadastroScreen({ navigation }) {
+  const [nome, setNome] = React.useState("");
+  const [senha, setSenha] = React.useState("");
+  const [confirmarSenha, setConfirmarSenha] = React.useState("");
+  const [tipo, setTipo] = React.useState("cliente");
+
+  const handleCadastro = () => {
+    if (!nome || !senha || !confirmarSenha) { alert("Preencha todos os campos!"); return; }
+    if (senha !== confirmarSenha) { alert("As senhas não coincidem!"); return; }
+    alert(`Cadastro realizado como ${tipo === "barbeiro" ? "Barbeiro ✂️" : "Cliente 👤"}!`);
+    navigation.navigate("Login");
+  };
+
+  return (
+    <View style={styles.screenCenter}>
+      <View style={styles.iconCircle}>
+        <Ionicons name="cut-outline" size={36} color={colors.gold} />
+      </View>
+
+      <Text style={styles.welcomeText}>Criar Conta ✂️</Text>
+
+      <TextInput style={styles.inputSmall} placeholder="Digite seu nome" placeholderTextColor={colors.textSecondary} value={nome} onChangeText={setNome} />
+      <TextInput style={styles.inputSmall} placeholder="Digite sua senha" placeholderTextColor={colors.textSecondary} secureTextEntry value={senha} onChangeText={setSenha} />
+      <TextInput style={styles.inputSmall} placeholder="Confirme sua senha" placeholderTextColor={colors.textSecondary} secureTextEntry value={confirmarSenha} onChangeText={setConfirmarSenha} />
+
+      <View style={{ width: "100%", marginBottom: 25 }}>
+        <Text style={styles.checkboxLabel}>Cadastrar como:</Text>
+
+        <View style={styles.checkboxRow}>
+          {["cliente", "barbeiro"].map((t) => (
+            <TouchableOpacity key={t} onPress={() => setTipo(t)} style={styles.checkboxCard(tipo === t)}>
+              <View style={styles.checkboxBox(tipo === t)}>
+                {tipo === t && <Text style={styles.checkboxCheck}>✓</Text>}
+              </View>
+              <View>
+                <Text style={styles.checkboxTitle}>{t === "cliente" ? "👤 Cliente" : "✂️ Barbeiro"}</Text>
+                <Text style={styles.checkboxSub}>{t === "cliente" ? "Agendar serviços" : "Gerenciar agenda"}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.primaryButton} onPress={handleCadastro}>
+        <Text style={styles.primaryButtonText}>Cadastrar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.linkRow} onPress={() => navigation.goBack()}>
+        <Text style={styles.linkText}>
+          Já tem conta?{" "}
+          <Text style={styles.linkHighlight}>Entrar</Text>
         </Text>
       </TouchableOpacity>
     </View>
@@ -164,57 +162,26 @@ function HomeScreen({ navigation, route }) {
 
   return (
     <ScrollView
-      style={{ backgroundColor: "#0F172A" }}
-      contentContainerStyle={{
-        paddingHorizontal: 16,
-        paddingTop: 60,
-        paddingBottom: 40,
-      }}
+      style={{ backgroundColor: colors.bg }}
+      contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 60, paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.header}>
-        <View style={styles.logoCircle}>
-          <Ionicons name="cut-outline" size={28} color="#fff" />
+      <View style={styles.homeHeader}>
+        <View style={styles.homeIconCircle}>
+          <Ionicons name="cut-outline" size={28} color={colors.textPrimary} />
         </View>
-
-        <Text style={styles.title}>
-          Barbearia <Text style={styles.highlight}>Premium</Text>
+        <Text style={styles.homeTitle}>
+          Barbearia <Text style={styles.homeHighlight}>Premium</Text>
         </Text>
-
-        {/* MOSTRA TIPO */}
-        <Text style={{ color: "#C9A227", marginTop: 5 }}>
-          {tipo === "barbeiro" ? "Modo Barbeiro" : "Modo Cliente"}
-        </Text>
-
-        <Text style={styles.subtitle}>
-          Experiência de barbearia de alta qualidade.
-          Escolha seu serviço e agende um horário.
+        <Text style={styles.homeTipo}>{tipo === "barbeiro" ? "Modo Barbeiro" : "Modo Cliente"}</Text>
+        <Text style={styles.homeSubtitle}>
+          Experiência de barbearia de alta qualidade. Escolha seu serviço e agende um horário.
         </Text>
       </View>
 
-      <ServiceCard
-        navigation={navigation}
-        service="Barba Completa"
-        description="Design de barba, aparação e hidratação"
-        price="R$ 35,00"
-        duration="25 minutos"
-      />
-
-      <ServiceCard
-        navigation={navigation}
-        service="Corte Infantil"
-        description="Corte especial para crianças"
-        price="R$ 35,00"
-        duration="25 minutos"
-      />
-
-      <ServiceCard
-        navigation={navigation}
-        service="Corte Clássico"
-        description="Corte tradicional com máquina e tesoura"
-        price="R$ 45,00"
-        duration="30 minutos"
-      />
+      <ServiceCard navigation={navigation} service="Barba Completa" description="Design de barba, aparação e hidratação" price="R$ 35,00" duration="25 minutos" image="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800" />
+      <ServiceCard navigation={navigation} service="Corte Infantil" description="Corte especial para crianças" price="R$ 35,00" duration="25 minutos" image="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800" />
+      <ServiceCard navigation={navigation} service="Corte Clássico" description="Corte tradicional com máquina e tesoura" price="R$ 45,00" duration="30 minutos" image="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800" />
     </ScrollView>
   );
 }
@@ -223,35 +190,32 @@ function HomeScreen({ navigation, route }) {
 /* ================= CARD ================= */
 ////////////////////////////////////////////////////////
 
-function ServiceCard({ navigation, service, description, price, duration }) {
+function ServiceCard({ navigation, service, description, price, duration, image }) {
   return (
     <View style={styles.card}>
-      <View style={styles.imagePlaceholder} />
+      {image ? (
+        <Image source={{ uri: image }} style={styles.cardImage} resizeMode="cover" />
+      ) : (
+        <View style={styles.cardImagePlaceholder}>
+          <Ionicons name="image-outline" size={40} color={colors.placeholder} />
+          <Text style={styles.cardImagePlaceholderText}>Sem imagem</Text>
+        </View>
+      )}
 
-      <View style={styles.cardContent}>
+      <View style={styles.cardBody}>
         <Text style={styles.cardTitle}>{service}</Text>
         <Text style={styles.cardDescription}>{description}</Text>
 
-        <View style={styles.infoRow}>
-          <Ionicons name="time-outline" size={16} color="#C9A227" />
-          <Text style={styles.duration}> {duration}</Text>
+        <View style={styles.cardDurationRow}>
+          <Ionicons name="time-outline" size={16} color={colors.gold} />
+          <Text style={styles.cardDurationText}>{duration}</Text>
         </View>
 
-        <Text style={styles.priceLabel}>A partir de</Text>
+        <Text style={styles.cardPriceLabel}>A partir de</Text>
 
-        <View style={styles.priceRow}>
-          <Text style={styles.price}>{price}</Text>
-
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={() =>
-              navigation.navigate("Details", {
-                service,
-                price,
-                duration,
-              })
-            }
-          >
+        <View style={styles.cardPriceRow}>
+          <Text style={styles.cardPrice}>{price}</Text>
+          <TouchableOpacity style={styles.cardArrowButton} onPress={() => navigation.navigate("Details", { service, price, duration })}>
             <Ionicons name="arrow-forward" size={18} color="#000" />
           </TouchableOpacity>
         </View>
@@ -280,46 +244,31 @@ function DetailsScreen({ route, salvaData, setSalvaData }) {
 
   return (
     <ScrollView
-      style={{ backgroundColor: "#0F172A" }}
+      style={{ backgroundColor: colors.bg }}
       contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={detailsStyles.title}>Agendamento</Text>
+      <Text style={styles.detailsTitle}>Agendamento</Text>
 
-      <View style={detailsStyles.card}>
-        <Text style={detailsStyles.service}>{service}</Text>
-        <Text style={detailsStyles.info}>⏱ {duration}</Text>
-        <Text style={detailsStyles.info}>💰 {price}</Text>
+      <View style={styles.detailsCard}>
+        <Text style={styles.detailsService}>{service}</Text>
+        <Text style={styles.detailsInfo}>⏱ {duration}</Text>
+        <Text style={styles.detailsInfo}>💰 {price}</Text>
       </View>
 
       {Object.keys(schedule).map((day) => (
         <View key={day} style={{ marginBottom: 20 }}>
-          <Text style={{ color: "#C9A227", fontSize: 18 }}>
-            {day}
-          </Text>
+          <Text style={styles.detailsDayTitle}>{day}</Text>
 
           {schedule[day].map((time) => {
             const fullTime = `${day} ${time}`;
-
             return (
               <TouchableOpacity
                 key={fullTime}
                 onPress={() => setSelectedTime(fullTime)}
-                style={{
-                  backgroundColor:
-                    selectedTime === fullTime ? "#C9A227" : "#1E293B",
-                  padding: 12,
-                  borderRadius: 10,
-                  marginBottom: 8,
-                }}
+                style={styles.detailsTimeButton(selectedTime === fullTime)}
               >
-                <Text
-                  style={{
-                    color: selectedTime === fullTime ? "#000" : "#fff",
-                  }}
-                >
-                  {time}
-                </Text>
+                <Text style={styles.detailsTimeText(selectedTime === fullTime)}>{time}</Text>
               </TouchableOpacity>
             );
           })}
@@ -327,23 +276,17 @@ function DetailsScreen({ route, salvaData, setSalvaData }) {
       ))}
 
       <TouchableOpacity
-        style={detailsStyles.button}
+        style={styles.detailsConfirmButton(!!selectedTime)}
         onPress={() => {
           if (selectedTime) {
-            const novaLista = [...salvaData, selectedTime];
-            setSalvaData(novaLista);
-
-            console.log("Agendamentos:", novaLista);
-
+            setSalvaData([...salvaData, selectedTime]);
             alert("Agendamento confirmado!");
             setSelectedTime(null);
           }
         }}
       >
-        <Text style={detailsStyles.buttonText}>
-          {selectedTime
-            ? `Confirmar ${selectedTime}`
-            : "Selecione um horário"}
+        <Text style={styles.detailsConfirmText(!!selectedTime)}>
+          {selectedTime ? `Confirmar ${selectedTime}` : "Selecione um horário"}
         </Text>
       </TouchableOpacity>
     </ScrollView>
