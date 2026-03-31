@@ -216,50 +216,102 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  // ===== DETAILS =====
-  detailsTitle: {
+  // ===== AGENDAMENTO =====
+  agendamentoTitle: {
     color: colors.textPrimary,
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
   },
-  detailsCard: {
+  agendamentoCard: {
     backgroundColor: colors.card,
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
   },
-  detailsService: {
+  agendamentoService: {
     color: colors.textPrimary,
     fontSize: 18,
     fontWeight: "bold",
   },
-  detailsInfo: {
+  agendamentoInfo: {
     color: colors.textSecondary,
     marginTop: 4,
   },
-  detailsDayTitle: {
+  agendamentoDayTitle: {
     color: colors.gold,
     fontSize: 18,
     marginBottom: 8,
   },
-  detailsTimeButton: (active) => ({
+  agendamentoTimeButton: (active) => ({
     backgroundColor: active ? colors.gold : colors.card,
     padding: 12,
     borderRadius: 10,
     marginBottom: 8,
   }),
-  detailsTimeText: (active) => ({
+  agendamentoTimeText: (active) => ({
     color: active ? "#000" : colors.textPrimary,
   }),
-  detailsConfirmButton: (active) => ({
+  agendamentoConfirmButton: (active) => ({
     backgroundColor: active ? colors.gold : colors.dark,
     padding: 16,
     borderRadius: 15,
     alignItems: "center",
   }),
-  detailsConfirmText: (active) => ({
+  agendamentoConfirmText: (active) => ({
     color: active ? "#000" : colors.textSecondary,
     fontWeight: "bold",
   }),
+
+  // ===== BARBEIRO HOME =====
+  barberEmpty: {
+    alignItems: "center",
+    marginTop: 60,
+    gap: 12,
+  },
+  barberEmptyText: {
+    color: colors.textSecondary,
+    fontSize: 16,
+    marginTop: 8,
+  },
+  barberCard: {
+    backgroundColor: colors.card,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 14,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.gold,
+  },
+  barberCardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    gap: 6,
+  },
+  barberTrashButton: {
+    marginLeft: "auto",
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: "#2d1a1a",
+  },
+  barberCardCliente: {
+    color: colors.gold,
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  barberCardService: {
+    color: colors.textPrimary,
+    fontSize: 17,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  barberCardRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  barberCardInfo: {
+    color: colors.textSecondary,
+    fontSize: 13,
+  },
 });

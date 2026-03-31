@@ -11,12 +11,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
 import { styles, colors } from "./details";
+import { loginUser, registerUser, addAgendamento, getAllAgendamentos, cancelAgendamento } from "./database";
 
 const Stack = createStackNavigator();
 
 export default function App() {
-  const [salvaData, setSalvaData] = React.useState([]);
-
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -30,11 +29,8 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Cadastro" component={CadastroScreen} options={{ title: "Criar Conta" }} />
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Details">
-          {(props) => (
-            <DetailsScreen {...props} salvaData={salvaData} setSalvaData={setSalvaData} />
-          )}
-        </Stack.Screen>
+        <Stack.Screen name="BarbeiroHome" component={BarbeiroHomeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Agendamento" component={AgendamentoScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -48,9 +44,11 @@ function LoginScreen({ navigation }) {
   const [nome, setNome] = React.useState("");
   const [senha, setSenha] = React.useState("");
 
-  const handleLogin = (tipo) => {
-    if (!nome || !senha) { alert("Preencha todos os campos!"); return; }
-    navigation.navigate("Home", { tipo });
+  const handleLogin = async () => {
+    const result = await loginUser(nome, senha);
+    if (!result.success) { alert(result.message); return; }
+    const dest = result.user.tipo === "barbeiro" ? "BarbeiroHome" : "Home";
+    navigation.navigate(dest, { user: result.user });
   };
 
   return (
@@ -78,7 +76,7 @@ function LoginScreen({ navigation }) {
         onChangeText={setSenha}
       />
 
-      <TouchableOpacity style={styles.primaryButton} onPress={() => handleLogin("cliente")}>
+      <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
         <Text style={styles.primaryButtonText}>Entrar</Text>
       </TouchableOpacity>
 
@@ -102,9 +100,10 @@ function CadastroScreen({ navigation }) {
   const [confirmarSenha, setConfirmarSenha] = React.useState("");
   const [tipo, setTipo] = React.useState("cliente");
 
-  const handleCadastro = () => {
-    if (!nome || !senha || !confirmarSenha) { alert("Preencha todos os campos!"); return; }
+  const handleCadastro = async () => {
     if (senha !== confirmarSenha) { alert("As senhas não coincidem!"); return; }
+    const result = await registerUser({ nome, senha, tipo });
+    if (!result.success) { alert(result.message); return; }
     alert(`Cadastro realizado como ${tipo === "barbeiro" ? "Barbeiro ✂️" : "Cliente 👤"}!`);
     navigation.navigate("Login");
   };
@@ -158,7 +157,8 @@ function CadastroScreen({ navigation }) {
 ////////////////////////////////////////////////////////
 
 function HomeScreen({ navigation, route }) {
-  const tipo = route?.params?.tipo;
+  const user = route?.params?.user;
+  const tipo = user?.tipo;
 
   return (
     <ScrollView
@@ -179,9 +179,93 @@ function HomeScreen({ navigation, route }) {
         </Text>
       </View>
 
-      <ServiceCard navigation={navigation} service="Barba Completa" description="Design de barba, aparação e hidratação" price="R$ 35,00" duration="25 minutos" image="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800" />
-      <ServiceCard navigation={navigation} service="Corte Infantil" description="Corte especial para crianças" price="R$ 35,00" duration="25 minutos" image="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800" />
-      <ServiceCard navigation={navigation} service="Corte Clássico" description="Corte tradicional com máquina e tesoura" price="R$ 45,00" duration="30 minutos" image="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800" />
+      <ServiceCard navigation={navigation} user={user} service="Barba Completa" description="Design de barba, aparação e hidratação" price="R$ 35,00" duration="25 minutos" image="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800" />
+      <ServiceCard navigation={navigation} user={user} service="Corte Infantil" description="Corte especial para crianças" price="R$ 35,00" duration="25 minutos" image="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800" />
+      <ServiceCard navigation={navigation} user={user} service="Corte Clássico" description="Corte tradicional com máquina e tesoura" price="R$ 45,00" duration="30 minutos" image="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800" />
+    </ScrollView>
+  );
+}
+
+////////////////////////////////////////////////////////
+/* ================= BARBEIRO HOME ================= */
+////////////////////////////////////////////////////////
+
+function BarbeiroHomeScreen({ route }) {
+  const user = route?.params?.user;
+  const [agendamentos, setAgendamentos] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const load = async () => {
+      const all = await getAllAgendamentos();
+      setAgendamentos(all);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  const handleCancel = async (ag) => {
+    await cancelAgendamento(ag.cliente, ag.id);
+    setAgendamentos((prev) => prev.filter((a) => a.id !== ag.id));
+  };
+
+  return (
+    <ScrollView
+      style={{ backgroundColor: colors.bg }}
+      contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 60, paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={styles.homeHeader}>
+        <View style={styles.homeIconCircle}>
+          <Ionicons name="cut-outline" size={28} color={colors.textPrimary} />
+        </View>
+        <Text style={styles.homeTitle}>
+          Olá, <Text style={styles.homeHighlight}>{user?.nome} ✂️</Text>
+        </Text>
+        <Text style={styles.homeTipo}>Modo Barbeiro</Text>
+        <Text style={styles.homeSubtitle}>Todos os agendamentos dos clientes aparecem aqui.</Text>
+      </View>
+
+      {loading && (
+        <Text style={{ color: colors.textSecondary, textAlign: "center", marginTop: 20 }}>
+          Carregando agendamentos...
+        </Text>
+      )}
+
+      {!loading && agendamentos.length === 0 && (
+        <View style={styles.barberEmpty}>
+          <Ionicons name="calendar-outline" size={48} color={colors.placeholder} />
+          <Text style={styles.barberEmptyText}>Nenhum agendamento ainda.</Text>
+        </View>
+      )}
+
+      {agendamentos.map((ag) => (
+        <View key={ag.id} style={styles.barberCard}>
+          <View style={styles.barberCardHeader}>
+            <Ionicons name="person-circle-outline" size={22} color={colors.gold} />
+            <Text style={styles.barberCardCliente}>{ag.cliente}</Text>
+            <TouchableOpacity
+              onPress={() => handleCancel(ag)}
+              style={styles.barberTrashButton}
+            >
+              <Ionicons name="trash-outline" size={18} color="#ff4d4d" />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.barberCardService}>{ag.service}</Text>
+          <View style={styles.barberCardRow}>
+            <Ionicons name="time-outline" size={14} color={colors.textSecondary} />
+            <Text style={styles.barberCardInfo}> {ag.time}</Text>
+          </View>
+          <View style={styles.barberCardRow}>
+            <Ionicons name="cut-outline" size={14} color={colors.textSecondary} />
+            <Text style={styles.barberCardInfo}> {ag.duration}</Text>
+          </View>
+          <View style={styles.barberCardRow}>
+            <Ionicons name="cash-outline" size={14} color={colors.gold} />
+            <Text style={[styles.barberCardInfo, { color: colors.gold }]}> {ag.price}</Text>
+          </View>
+        </View>
+      ))}
     </ScrollView>
   );
 }
@@ -190,7 +274,7 @@ function HomeScreen({ navigation, route }) {
 /* ================= CARD ================= */
 ////////////////////////////////////////////////////////
 
-function ServiceCard({ navigation, service, description, price, duration, image }) {
+function ServiceCard({ navigation, user, service, description, price, duration, image }) {
   return (
     <View style={styles.card}>
       {image ? (
@@ -215,7 +299,7 @@ function ServiceCard({ navigation, service, description, price, duration, image 
 
         <View style={styles.cardPriceRow}>
           <Text style={styles.cardPrice}>{price}</Text>
-          <TouchableOpacity style={styles.cardArrowButton} onPress={() => navigation.navigate("Details", { service, price, duration })}>
+            <TouchableOpacity style={styles.cardArrowButton} onPress={() => navigation.navigate("Agendamento", { service, price, duration, user })}>
             <Ionicons name="arrow-forward" size={18} color="#000" />
           </TouchableOpacity>
         </View>
@@ -225,11 +309,11 @@ function ServiceCard({ navigation, service, description, price, duration, image 
 }
 
 ////////////////////////////////////////////////////////
-/* ================= DETAILS ================= */
+/* ================= AGENDAMENTO ================= */
 ////////////////////////////////////////////////////////
 
-function DetailsScreen({ route, salvaData, setSalvaData }) {
-  const { service, price, duration } = route.params;
+function AgendamentoScreen({ route }) {
+  const { service, price, duration, user } = route.params;
   const [selectedTime, setSelectedTime] = React.useState(null);
 
   const schedule = {
@@ -248,17 +332,17 @@ function DetailsScreen({ route, salvaData, setSalvaData }) {
       contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={styles.detailsTitle}>Agendamento</Text>
+      <Text style={styles.agendamentoTitle}>Agendamento</Text>
 
-      <View style={styles.detailsCard}>
-        <Text style={styles.detailsService}>{service}</Text>
-        <Text style={styles.detailsInfo}>⏱ {duration}</Text>
-        <Text style={styles.detailsInfo}>💰 {price}</Text>
+      <View style={styles.agendamentoCard}>
+        <Text style={styles.agendamentoService}>{service}</Text>
+        <Text style={styles.agendamentoInfo}>⏱ {duration}</Text>
+        <Text style={styles.agendamentoInfo}>💰 {price}</Text>
       </View>
 
       {Object.keys(schedule).map((day) => (
         <View key={day} style={{ marginBottom: 20 }}>
-          <Text style={styles.detailsDayTitle}>{day}</Text>
+          <Text style={styles.agendamentoDayTitle}>{day}</Text>
 
           {schedule[day].map((time) => {
             const fullTime = `${day} ${time}`;
@@ -266,9 +350,9 @@ function DetailsScreen({ route, salvaData, setSalvaData }) {
               <TouchableOpacity
                 key={fullTime}
                 onPress={() => setSelectedTime(fullTime)}
-                style={styles.detailsTimeButton(selectedTime === fullTime)}
+                style={styles.agendamentoTimeButton(selectedTime === fullTime)}
               >
-                <Text style={styles.detailsTimeText(selectedTime === fullTime)}>{time}</Text>
+                <Text style={styles.agendamentoTimeText(selectedTime === fullTime)}>{time}</Text>
               </TouchableOpacity>
             );
           })}
@@ -276,16 +360,22 @@ function DetailsScreen({ route, salvaData, setSalvaData }) {
       ))}
 
       <TouchableOpacity
-        style={styles.detailsConfirmButton(!!selectedTime)}
-        onPress={() => {
+        style={styles.agendamentoConfirmButton(!!selectedTime)}
+        onPress={async () => {
           if (selectedTime) {
-            setSalvaData([...salvaData, selectedTime]);
+            await addAgendamento(user.nome, {
+              id: Date.now(),
+              service,
+              price,
+              duration,
+              time: selectedTime,
+            });
             alert("Agendamento confirmado!");
             setSelectedTime(null);
           }
         }}
       >
-        <Text style={styles.detailsConfirmText(!!selectedTime)}>
+        <Text style={styles.agendamentoConfirmText(!!selectedTime)}>
           {selectedTime ? `Confirmar ${selectedTime}` : "Selecione um horário"}
         </Text>
       </TouchableOpacity>
